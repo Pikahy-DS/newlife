@@ -151,7 +151,7 @@ while True:
         async def delivery_sms(id_recipient,id_sunder,text,message: Message):
             start_time = time.time()
             bot = Bot(TOKEN, parse_mode = "html")
-            await bot.send_message(id_recipient, f'Сообщение от: {id_sunder}\nТехт: {text}', reply_markup = markup_main)
+            await bot.send_message(id_recipient, f'Сообщение от: <a href="tg://user?id={int(id_sunder)}">{str(message.from_user.first_name)}</a>\nТехт: {text}', reply_markup = markup_main)
             await message.answer('Сообщение отправлено!')
             await bot.session.close()
             await logir('delivery_sms',start_time, message)
@@ -163,23 +163,26 @@ while True:
                 await call.message.edit_text(await get_horoscope_by_day(call.data, 'ru' ,call))
             else:
                 zod = int(call.data) - 100
-                print(call.data)
                 await call.message.edit_text(await get_horoscope_by_day(zod, 'en', call))
 
         @form_router.message(Form.Text_employee)
         async def help_text(message: Message, state: FSMContext):
             start_time = time.time()
             try:
-                text = message.text.split(',')
+
+                id = message.from_user.id
+                if id in admin:
+                    text = message.text.split(',')
+                    await delivery_sms(text[0], admin[0], text[1], message)
+                else:
+                    text = message.text
+                    await delivery_sms(admin[0], id, text, message)
+                await state.clear()
+                await logir('help_text', start_time, message)
             except:
                 await state.clear()
                 await message.answer('Ошибка. Попробуй сначала.')
-            id = message.from_user.id
-            if id in admin:
-                await delivery_sms(text[0],admin[0],text[1],message)
-            else:
-                await delivery_sms(admin[0],id,text,message)
-            await logir('help_text',start_time, message)
+
 
         @form_router.message(commands={"cancel"})
         @form_router.message(F.text.casefold() == "cancel")
