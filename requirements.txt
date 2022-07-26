@@ -1,0 +1,5 @@
+aiogram==3.0.0b4
+pyowm
+requests
+bs4
+translate
