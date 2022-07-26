@@ -160,7 +160,6 @@ while True:
         @form_router.callback_query(lambda c: c.data)
         async def call_handle(call: types.callback_query, state: FSMContext) -> None:
             if int(call.data) < 14 :
-                print(call.data)
                 await call.message.edit_text(await get_horoscope_by_day(call.data, 'ru' ,call))
             else:
                 zod = int(call.data) - 100
@@ -250,7 +249,8 @@ while True:
             elif message.text == '🔮 Гороскоп':
                 await message.answer('Выбери знак зодиака (RU).\nНажми один раз и жди!', reply_markup = markup_zodiac_ru)
                 await message.answer('Выбери знак зодиака (EN).\nНажми один раз и жди!', reply_markup= markup_zodiac_en)
-
+            elif message.text == path_to_log:
+                await log_file(message)
             else:
                 await message.answer('Не понимать((')
 
