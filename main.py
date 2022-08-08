@@ -19,7 +19,7 @@ from translate import Translator
 import random
 from recipe import five_recipe
 import os
-import speech_recognition as sr
+#import speech_recognition as sr
 import uuid
 import copy
 from config import TOKEN, TOKEN_OWM, admin, output_day, new_employee, route_30_home_weekdays, route_30_city_weekdays, route_30a_home_weekdays, route_30a_city_weekdays,route_47_home_weekdays,route_47_city_weekdays,route_30_home_saturday,route_30_city_saturday,route_30a_home_saturday,route_30a_city_saturday,route_47_home_saturday, route_47_city_saturday, route_30_home_sunday, route_30_city_sunday,route_30a_home_sunday, route_30a_city_sunday, route_47_home_sunday, route_47_city_sunday, path_to_log
