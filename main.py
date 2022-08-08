@@ -1,3 +1,4 @@
+# -*- coding: utf8 -*-
 import logging
 import asyncio
 from typing import Any
@@ -15,21 +16,79 @@ from pyowm.utils.config import get_default_config
 import requests
 from bs4 import BeautifulSoup
 from translate import Translator
-
-
-from config import TOKEN, TOKEN_OWM, admin, output_day, new_employee, route_30_home_weekdays, route_30_city_weekdays, route_30a_home_weekdays, route_30a_city_weekdays,route_47_home_weekdays,route_47_city_weekdays,route_30_home_saturday,route_30_city_saturday,route_30a_home_saturday,route_30a_city_saturday,route_47_home_saturday, route_47_city_saturday, route_30_home_sunday, route_30_home_sunday,route_30a_home_sunday, route_30a_city_sunday, route_47_home_sunday, route_47_city_sunday, path_to_log
-from key import markup_main, markup_admin, markup_zodiac_ru, markup_zodiac_en
+import random
+from recipe import five_recipe
+import os
+import speech_recognition as sr
+import uuid
+import copy
+from config import TOKEN, TOKEN_OWM, admin, output_day, new_employee, route_30_home_weekdays, route_30_city_weekdays, route_30a_home_weekdays, route_30a_city_weekdays,route_47_home_weekdays,route_47_city_weekdays,route_30_home_saturday,route_30_city_saturday,route_30a_home_saturday,route_30a_city_saturday,route_47_home_saturday, route_47_city_saturday, route_30_home_sunday, route_30_city_sunday,route_30a_home_sunday, route_30a_city_sunday, route_47_home_sunday, route_47_city_sunday, path_to_log
+from key import markup_main, markup_admin, markup_zodiac_ru, markup_zodiac_en, markup_games
 
 while True:
     try:
+
         owm = pyowm.OWM(TOKEN_OWM)
         form_router = Router()
         TOKEN = TOKEN
         dp = Dispatcher(storage=MemoryStorage())
         logger = logging.getLogger(__name__)
+        language = 'ru_RU'
+        r = sr.Recognizer()
 
         class Form(StatesGroup):
             Text_employee = State()
+            Choice = State()
+            Cow_bull_num = State()
+
+
+        async def we(message):
+            start_time = time.time()
+            current = datetime.datetime.now().date()
+            previous_data = datetime.date(2020, 6, 26)
+            print(type(previous_data), type(current), previous_data, current, type(datetime.datetime.now()), datetime.datetime.now(), type(datetime.date(2020, 6, 26)), datetime.date(2020, 6, 26))
+            we_data = (current - previous_data)
+            print(we_data.days)
+            day = 17 - int(datetime.datetime.now().strftime("%d"))
+            if day < 0:
+                day = 26 - int(datetime.datetime.now().strftime("%d"))
+            if day < 0:
+                day = 31 - int(datetime.datetime.now().strftime("%d")) + 17
+            await message.answer(f'Вы вместе уже:\n\nДней: {int(we_data.days)}\nМесяцев: {int(we_data.days/30)}\nЛет: {int(we_data.days/365)}\n{50*"-"}\nДо ближайшего праздника: {day}')
+            await logir('we', start_time, message)
+
+
+        async def recipe(message):
+            start_time = time.time()
+            await message.answer(f"{five_recipe}")
+            await logir('recipe', start_time, message)
+
+
+        # Обработка голосовых сообщений и перевод их на английский язык
+        async def recognise(filename, message):
+            start_time = time.time()
+            with sr.AudioFile(filename) as source:
+                audio_text = r.listen(source)
+                translator = Translator(from_lang='ru', to_lang='en')
+                await logir('recognise', start_time, message)
+                try:
+                    text = r.recognize_google(audio_text, language=language)
+                    print(text)
+                    return translator.translate(str(text))
+                except:
+                    print('Sorry')
+                    return 'Sorry'
+
+        #Формирование списка игры
+        async def games_array_num_bot(message: Message, state: FSMContext):
+            start_time = time.time()
+            array_num_bot = []
+            while len(array_num_bot) < 4:
+                num = random.randint(1, 9)
+                if num not in array_num_bot:
+                    array_num_bot.append(num)
+            await state.update_data(Cow_bull_num=array_num_bot)
+            await logir('games_array_num_bot', start_time, message)
 
 
         async def get_horoscope_by_day(zodiac_sign: int, flag, message):
@@ -47,11 +106,13 @@ while True:
             f = open(path_to_log,'a')
             f.write(f'{datetime.datetime.now().date().strftime("%d.%m.%y")};{datetime.datetime.now().time().strftime("%H:%M")};{message.from_user.id};{function};{str(time.time() - start_time)[0:5]}\n')
             f.close()
+
         #Для удаленной выгрузки
         async def log_file(message):
             start_time = time.time()
             await message.answer_document(FSInputFile(path_to_log))
             await logir('log_file',start_time,message)
+
         #Чтобы бот не отключился
         async def not_sleep(message: Message):
             flag = True
@@ -68,7 +129,7 @@ while True:
                 config_dict = get_default_config()
                 config_dict['language'] = 'RU'
                 mgr = owm.weather_manager()
-                observation = mgr.weather_at_place('Старый Оскол')
+                observation = mgr.weather_at_place('Belgorod')
                 w = observation.weather
                 temp = w.temperature('celsius')['temp']
                 Wind = w.wind()
@@ -95,8 +156,9 @@ while True:
 
 
         #Определение предыдущего рейса
-        async def flight(route, current_second, flag, message: Message):
+        async def flight(route, current_second, flag, message: Message): 
             start_time = time.time()
+
             route_array = []
             for i in route:
                 if flag == 'previous':
@@ -106,10 +168,13 @@ while True:
                 if eval(f'{i} {sing} {current_second}'):
                     route_array.append(i)
             await logir('flight', start_time, message)
-            if len(route_array) > 0 and (flag == 'previous' or flag == 'current'):
+
+            if len(route_array) > 0 and flag == 'previous':
                 return datetime.timedelta(seconds = route_array[-1])
-            elif flag == 'next' and len(route) <= len(route_array)+1:
-                return datetime.timedelta(seconds = route[len(route_array)+1])
+            elif len(route_array) > 0 and flag == 'current':
+                return datetime.timedelta(seconds = route_array[0])
+            elif flag == 'next' and 1 < len(route_array):
+                return datetime.timedelta(seconds = route_array[1])
             else:
                 return 'Конец'
 
@@ -135,12 +200,13 @@ while True:
                 week = 'saturday'
             else:
                 week = 'sunday'
+            #print(globals().get(f'route_30_{route}_{week}'))
             M30 = await schedule_route(globals().get(f'route_30_{route}_{week}'), message)
             M30a = await schedule_route(globals().get(f'route_30a_{route}_{week}'), message)
             M47 = await schedule_route(globals().get(f'route_47_{route}_{week}'), message)
             if route == 'city':
-                await message.answer(f'<b>🚂 С ЖД вокзала:</b>\n<b>🚌 Автобус</b> №30\n<b>🔙Предыдущий -</b>{str(M30[0])[:5]} \n <b>⌚ Время отправления</b> - {str(M30[1])[:5]}\n<b>🔜Следующий - </b>{str(M30[2])[:5]}\n\n<b>🚎 Автобус</b> №30A\n<b>🔙Предыдущий -</b>{str(M30a[0])[:5]} \n <b>⌚ Время отправления</b> - {str(M30a[1])[:5]}\n<b>🔜Следующий -</b> {str(M30a[2])[:5]} \n\n<b>🏪 С Cпутника:</b>   '
-                                                 f'\n<b>🚍 Автобус</b> №47\n<b>🔙Предыдущий -</b>{str(M47[0])[:5]} \n<b>⌚ Время отправления</b> - {str(M47[1])[:5]}\n<b>🔜Следующий - </b>{str(M47[2])[:5]} ',
+                await message.answer(f'<b>🚂 С ЖД вокзала:</b>\n<b>🚌 Автобус</b> №30\n<b>🔙Предыдущий - </b>{str(M30[0])[:5]} \n <b>⌚ Время отправления</b> - {str(M30[1])[:5]}\n<b>🔜Следующий - </b>{str(M30[2])[:5]}\n\n<b>🚎 Автобус</b> №30A\n<b>🔙Предыдущий -</b>{str(M30a[0])[:5]} \n <b>⌚ Время отправления</b> - {str(M30a[1])[:5]}\n<b>🔜Следующий -</b> {str(M30a[2])[:5]} \n\n<b>🏪 С Cпутника:</b>   '
+                                                 f'\n<b>🚍 Автобус</b> №47\n<b>🔙Предыдущий - </b>{str(M47[0])[:5]} \n<b>⌚ Время отправления</b> - {str(M47[1])[:5]}\n<b>🔜Следующий - </b>{str(M47[2])[:5]} ',
                                                  parse_mode='html')
             else:
                 await message.answer(f'<b>🏛 С каштановой:</b>\n<b>🚌 Автобус</b> №30\n<b>⌚️Время отправления</b> - {str(M30[1])[:5]}\n<b>🔜Следующий -</b> {str(M30[2])[:5]}\n\n<b>🚎 Автобус</b> №30A\n<b>⌚️Время отправления</b> - {str(M30a[1])[:5]}\n<b>🔜Следующий -</b> {str(M30a[2])[:5]}\n'
@@ -156,6 +222,13 @@ while True:
             await bot.session.close()
             await logir('delivery_sms',start_time, message)
 
+        async def games(message):
+            array_num = []
+            while len(array_num) < 4:
+                num = random.randint(1,9)
+                if num not in array_num:
+                    array_num.append(num)
+            print(array_num)
 
         @form_router.callback_query(lambda c: c.data)
         async def call_handle(call: types.callback_query, state: FSMContext) -> None:
@@ -164,6 +237,54 @@ while True:
             else:
                 zod = int(call.data) - 100
                 await call.message.edit_text(await get_horoscope_by_day(zod, 'en', call))
+
+        # Обработка голосовых сообщений и перевод их на английский язык
+        @form_router.message(content_types=['voice'])
+        async def voice_processing(message):
+            start_time = time.time()
+            bot = Bot(TOKEN, parse_mode="html")
+            filename = str(uuid.uuid4())
+            file_name_full = "./voice" + filename + ".ogg"
+            file_name_full_converted = "./ready/" + filename + ".wav"
+            file_info = await bot.get_file(message.voice.file_id)
+            downloaded_file = await bot.download_file(file_info.file_path)
+            with open(file_name_full, 'wb') as new_file:
+                new_file.write(downloaded_file)
+            os.system("ffmpeg -i " + file_name_full + " " + file_name_full_converted)
+            text = recognise(file_name_full_converted, message)
+            await bot.reply_to(text)
+            os.remove(file_name_full)
+            os.remove(file_name_full_converted)
+            await bot.session_close()
+            await logir('voice_processing', start_time, message)
+
+        # Процесс игры
+        @form_router.message(Form.Choice)
+        async def games(message: Message, state: FSMContext):
+            start_time = time.time()
+            array_game_user = []
+            array_bot = await state.get_data()
+            array_num_user = [message.text[i] for i in range(0, len(message.text))]
+            array_game = copy.deepcopy(array_num_user)
+            array_game_bot = copy.deepcopy(array_bot['Cow_bull_num'])
+            print(array_game_bot)
+            for i in array_game:
+                array_game_user.append(int(i))
+            num_accurate = [i for i, j in zip(array_game_user, array_game_bot) if i == j]
+            print(num_accurate)
+            for num in num_accurate:
+                array_game_user.remove(num)
+                array_game_bot.remove(num)
+            num_inaccurate = list(set(array_game_user).intersection(array_game_bot))
+            print(num_inaccurate, num_accurate)
+            if len(num_accurate) < 4:
+                await state.set_state(Form.Choice)
+                await message.answer(
+                    f"Твой вариант: {message.text}\n{len(num_accurate)} {'быка' if len(num_accurate) > 1 else 'быков'} и {len(num_inaccurate)} {'коров' if len(num_inaccurate) == 0 else ('коровы' if len(num_inaccurate) != 1 else 'корова' )}.\nПопробуй еще раз)")
+            else:
+                await state.clear()
+                await message.answer(f"МУУУ, ты нашел всех быков, поздравляю!!!", reply_markup=markup_main)
+            await logir('games', start_time, message)
 
         @form_router.message(Form.Text_employee)
         async def help_text(message: Message, state: FSMContext):
@@ -254,8 +375,38 @@ while True:
                 await message.answer('Выбери знак зодиака (EN).\nНажми один раз и жди!', reply_markup= markup_zodiac_en)
             elif message.text == path_to_log:
                 await log_file(message)
+            elif message.text == 'Рецепт':
+                start_time = time.time()
+                await recipe(message)
+                await logir('Рецепт', start_time, message)
+            elif message.text == 'Вместе':
+                start_time = time.time()
+                await we(message)
+                await logir('Вместе', start_time, message)
+            elif message.text == '$':
+                start_time = time.time()
+                value_d = requests.get('https://www.cbr-xml-daily.ru/daily_json.js').json()['Valute']['USD']['Value']
+                await message.answer(f"Cейчас 1 доллар это {value_d} рубля")
+                await logir('USD', start_time, message)
+            elif message.text == '€':
+                start_time = time.time()
+                value_d = requests.get('https://www.cbr-xml-daily.ru/daily_json.js').json()['Valute']['EUR']['Value']
+                await message.answer(f"Cейчас 1 евро это {value_d} рубля")
+                await logir('EUR', start_time, message)
+            elif message.text == 'Новая игра':
+                start_time = time.time()
+                await games_array_num_bot(message, state)
+                await state.set_state(Form.Choice)
+                await message.answer(
+                    'Я придумал! Введи 4-х значное число с неповторяющимися цифрами.\nБыки - угадал цифру и ее расположение. Корова - угадал только цифру.\nЕсли надоест играть, нажми на клавиатуре кнопку "/cancel".',
+                    reply_markup=markup_games)
+                await logir('Игра', start_time, message)
+            elif message.text == '?':
+                yes_no = 'да' if random.randint(1, 2) == 1 else 'не'
+                await message.answer(f"Я тебе говорю {yes_no} делай это!")
+                await message.answer(f"Он уже мчииит под цифрой {random.randint(1, 10)}")
             else:
-                await message.answer('Не понимать((')
+                await message.answer('Не понимать((\nЕсли введешь "Новая игра", то сможешь поиграть в игру) ')
 
 
         def main() -> None:

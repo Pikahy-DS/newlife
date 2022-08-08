@@ -3,7 +3,7 @@ from aiogram.utils.keyboard import ReplyKeyboardMarkup, InlineKeyboardMarkup
 
 builder_main = [[KeyboardButton(text='🏠 Домой'), KeyboardButton(text='🏫 В город')],[KeyboardButton(text='🔮 Гороскоп'), KeyboardButton(text = '⛅ Погода')]]
 markup_main = ReplyKeyboardMarkup(resize_keyboard=True, keyboard=builder_main)
-builder_admin = [[KeyboardButton(text='🏠 Домой'), KeyboardButton(text='🏫 В город')],[KeyboardButton(text='Hi'), KeyboardButton(text='ГО')]]
+builder_admin = [[KeyboardButton(text='🏠 Домой'), KeyboardButton(text='🏫 В город')],[KeyboardButton(text='Hi'), KeyboardButton(text='ГО'),  KeyboardButton(text='Новая игра')],[KeyboardButton(text='€'), KeyboardButton(text='$'),  KeyboardButton(text='Вместе'),  KeyboardButton(text='Рецепт')]]
 markup_admin = ReplyKeyboardMarkup(resize_keyboard=True, keyboard=builder_admin)
 
 builder_zodiac_ru = [[InlineKeyboardButton(text='Овен', callback_data='1'),InlineKeyboardButton(text='Скорпион', callback_data='8'),InlineKeyboardButton(text='Близнецы', callback_data='3'),],
@@ -17,3 +17,6 @@ builder_zodiac_en = [[InlineKeyboardButton(text='Aries', callback_data='101'),In
                   [InlineKeyboardButton(text='Libra', callback_data='107'),InlineKeyboardButton(text='Taurus', callback_data='102'),InlineKeyboardButton(text='Sagittarius', callback_data='109')],
                   [InlineKeyboardButton(text='Capricorn', callback_data='110'),InlineKeyboardButton(text='Aquarius', callback_data='111'),InlineKeyboardButton(text='Pisces', callback_data='112')]]
 markup_zodiac_en = InlineKeyboardMarkup(inline_keyboard=builder_zodiac_en)
+
+builder_games = [[KeyboardButton(text = 'Новая игра')],[KeyboardButton(text='/cancel')]]
+markup_games = ReplyKeyboardMarkup(resize_keyboard = True, keyboard = builder_games)
