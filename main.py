@@ -34,7 +34,7 @@ while True:
         dp = Dispatcher(storage=MemoryStorage())
         logger = logging.getLogger(__name__)
         language = 'ru_RU'
-        r = sr.Recognizer()
+        # r = sr.Recognizer()
 
         class Form(StatesGroup):
             Text_employee = State()
@@ -65,19 +65,19 @@ while True:
 
 
         # Обработка голосовых сообщений и перевод их на английский язык
-        async def recognise(filename, message):
-            start_time = time.time()
-            with sr.AudioFile(filename) as source:
-                audio_text = r.listen(source)
-                translator = Translator(from_lang='ru', to_lang='en')
-                await logir('recognise', start_time, message)
-                try:
-                    text = r.recognize_google(audio_text, language=language)
-                    print(text)
-                    return translator.translate(str(text))
-                except:
-                    print('Sorry')
-                    return 'Sorry'
+        # async def recognise(filename, message):
+        #     start_time = time.time()
+        #     with sr.AudioFile(filename) as source:
+        #         audio_text = r.listen(source)
+        #         translator = Translator(from_lang='ru', to_lang='en')
+        #         await logir('recognise', start_time, message)
+        #         try:
+        #             text = r.recognize_google(audio_text, language=language)
+        #             print(text)
+        #             return translator.translate(str(text))
+        #         except:
+        #             print('Sorry')
+        #             return 'Sorry'
 
         #Формирование списка игры
         async def games_array_num_bot(message: Message, state: FSMContext):
@@ -239,24 +239,24 @@ while True:
                 await call.message.edit_text(await get_horoscope_by_day(zod, 'en', call))
 
         # Обработка голосовых сообщений и перевод их на английский язык
-        @form_router.message(content_types=['voice'])
-        async def voice_processing(message):
-            start_time = time.time()
-            bot = Bot(TOKEN, parse_mode="html")
-            filename = str(uuid.uuid4())
-            file_name_full = "./voice" + filename + ".ogg"
-            file_name_full_converted = "./ready/" + filename + ".wav"
-            file_info = await bot.get_file(message.voice.file_id)
-            downloaded_file = await bot.download_file(file_info.file_path)
-            with open(file_name_full, 'wb') as new_file:
-                new_file.write(downloaded_file)
-            os.system("ffmpeg -i " + file_name_full + " " + file_name_full_converted)
-            text = recognise(file_name_full_converted, message)
-            await bot.reply_to(text)
-            os.remove(file_name_full)
-            os.remove(file_name_full_converted)
-            await bot.session_close()
-            await logir('voice_processing', start_time, message)
+        # @form_router.message(content_types=['voice'])
+        # async def voice_processing(message):
+        #     start_time = time.time()
+        #     bot = Bot(TOKEN, parse_mode="html")
+        #     filename = str(uuid.uuid4())
+        #     file_name_full = "./voice" + filename + ".ogg"
+        #     file_name_full_converted = "./ready/" + filename + ".wav"
+        #     file_info = await bot.get_file(message.voice.file_id)
+        #     downloaded_file = await bot.download_file(file_info.file_path)
+        #     with open(file_name_full, 'wb') as new_file:
+        #         new_file.write(downloaded_file)
+        #     os.system("ffmpeg -i " + file_name_full + " " + file_name_full_converted)
+        #     text = recognise(file_name_full_converted, message)
+        #     await bot.reply_to(text)
+        #     os.remove(file_name_full)
+        #     os.remove(file_name_full_converted)
+        #     await bot.session_close()
+        #     await logir('voice_processing', start_time, message)
 
         # Процесс игры
         @form_router.message(Form.Choice)
