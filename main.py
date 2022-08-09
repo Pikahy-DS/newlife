@@ -146,7 +146,9 @@ while True:
         #Получение текущей даты и времени
         async def current_datetime_today(message: Message):
             start_time = time.time()
-            current = datetime.datetime.now()
+            offset = datetime.timedelta(hours=3)
+            tz = datetime.timezone(offset, name='МСК')
+            current = datetime.datetime.now(tz = tz)
             current_date = current.strftime("%d.%m.%y")
             current_time = current.strftime("%H:%M")
             current_day = current.isocalendar()[2]
