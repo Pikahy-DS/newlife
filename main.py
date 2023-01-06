@@ -22,7 +22,7 @@ import os
 #import speech_recognition as sr
 import uuid
 import copy
-from config import TOKEN, TOKEN_OWM, admin, output_day, new_employee, route_30_home_weekdays, route_30_city_weekdays, route_30a_home_weekdays, route_30a_city_weekdays,route_47_home_weekdays,route_47_city_weekdays,route_30_home_saturday,route_30_city_saturday,route_30a_home_saturday,route_30a_city_saturday,route_47_home_saturday, route_47_city_saturday, route_30_home_sunday, route_30_city_sunday,route_30a_home_sunday, route_30a_city_sunday, route_47_home_sunday, route_47_city_sunday, path_to_log
+from config import TOKEN, TOKEN_OWM, admin, output_day, sunday_day, new_employee,route_54_home_sunday,route_54_city_sunday,route_53_home_sunday,route_53_city_sunday,route_52_home_sunday,route_52_city_sunday,route_51_home_sunday,route_51_city_sunday,route_54_home_saturday,route_54_city_saturday,route_53_home_saturday,route_53_city_saturday,route_52_home_saturday,route_52_city_saturday,route_51_home_saturday,route_51_city_saturday,route_51_city_weekdays,route_52_city_weekdays,route_53_city_weekdays,route_54_city_weekdays,route_51_home_weekdays,route_52_home_weekdays,route_53_home_weekdays,route_54_home_weekdays,route_30_home_weekdays, route_30_city_weekdays, route_30a_home_weekdays, route_30a_city_weekdays,route_47_home_weekdays,route_47_city_weekdays,route_30_home_saturday,route_30_city_saturday,route_30a_home_saturday,route_30a_city_saturday,route_47_home_saturday, route_47_city_saturday, route_30_home_sunday, route_30_city_sunday,route_30a_home_sunday, route_30a_city_sunday, route_47_home_sunday, route_47_city_sunday, path_to_log
 from key import markup_main, markup_admin, markup_zodiac_ru, markup_zodiac_en, markup_games
 
 while True:
@@ -198,21 +198,33 @@ while True:
             current_datetime = await current_datetime_today(message)
             if current_datetime[2] != 6 and current_datetime[2] != 7 and current_datetime[0] not in output_day:
                 week = 'weekdays'
-            elif current_datetime[2] == 6 and current_datetime[0] not in output_day:
+            elif (current_datetime[2] == 6 and current_datetime[0] not in output_day) or (current_datetime[0] in sunday_day):
                 week = 'saturday'
             else:
                 week = 'sunday'
             #print(globals().get(f'route_30_{route}_{week}'))
             M30 = await schedule_route(globals().get(f'route_30_{route}_{week}'), message)
-            M30a = await schedule_route(globals().get(f'route_30a_{route}_{week}'), message)
+            #M30a = await schedule_route(globals().get(f'route_30a_{route}_{week}'), message)
             M47 = await schedule_route(globals().get(f'route_47_{route}_{week}'), message)
+            M51 = await schedule_route(globals().get(f'route_51_{route}_{week}'), message)
+            M52 = await schedule_route(globals().get(f'route_52_{route}_{week}'), message)
+            M53 = await schedule_route(globals().get(f'route_53_{route}_{week}'), message)
+            M54 = await schedule_route(globals().get(f'route_54_{route}_{week}'), message)
             if route == 'city':
-                await message.answer(f'<b>🚂 С ЖД вокзала:</b>\n<b>🚌 Автобус</b> №30\n<b>🔙Предыдущий - </b>{str(M30[0])[:5]} \n <b>⌚ Время отправления</b> - {str(M30[1])[:5]}\n<b>🔜Следующий - </b>{str(M30[2])[:5]}\n\n<b>🚎 Автобус</b> №30A\n<b>🔙Предыдущий -</b>{str(M30a[0])[:5]} \n <b>⌚ Время отправления</b> - {str(M30a[1])[:5]}\n<b>🔜Следующий -</b> {str(M30a[2])[:5]} \n\n<b>🏪 С Cпутника:</b>   '
-                                                 f'\n<b>🚍 Автобус</b> №47\n<b>🔙Предыдущий - </b>{str(M47[0])[:5]} \n<b>⌚ Время отправления</b> - {str(M47[1])[:5]}\n<b>🔜Следующий - </b>{str(M47[2])[:5]} ',
+                await message.answer(f'<b>🚂 С ЖД вокзала:</b>\n<b>🚌 Автобус</b> №30\n<b>🔙Предыдущий - </b>{str(M30[0])[:5]} \n <b>⌚ Время отправления</b> - {str(M30[1])[:5]}\n<b>🔜Следующий - </b>{str(M30[2])[:5]}\n\n'
+                                     f'<b>🚎 Автобус</b> №51\n<b>🔙Предыдущий -</b>{str(M51[0])[:5]} \n <b>⌚ Время отправления</b> - {str(M51[1])[:5]}\n<b>🔜Следующий -</b> {str(M51[2])[:5]} \n\n'
+                                     f'<b>🚎 Автобус</b> №52\n<b>🔙Предыдущий -</b>{str(M52[0])[:5]} \n <b>⌚ Время отправления</b> - {str(M52[1])[:5]}\n<b>🔜Следующий -</b> {str(M52[2])[:5]} \n\n'
+                                     f'<b>✈ С Аэропорта:</b>\n<b>🚌 Автобус</b> №53\n<b>🔙Предыдущий - </b>{str(M53[0])[:5]} \n <b>⌚ Время отправления</b> - {str(M53[1])[:5]}\n<b>🔜Следующий - </b>{str(M54[2])[:5]}\n\n'
+                                     f'<b>🚎 Автобус</b> №54\n<b>🔙Предыдущий -</b>{str(M54[0])[:5]} \n <b>⌚ Время отправления</b> - {str(M54[1])[:5]}\n<b>🔜Следующий -</b> {str(M54[2])[:5]} \n\n'
+                                                 f'<b>🏪 С Cпутника:</b>\n<b>🚍 Автобус</b> №147\n<b>🔙Предыдущий - </b>{str(M47[0])[:5]} \n<b>⌚ Время отправления</b> - {str(M47[1])[:5]}\n<b>🔜Следующий - </b>{str(M47[2])[:5]} ',
                                                  parse_mode='html')
             else:
-                await message.answer(f'<b>🏛 С каштановой:</b>\n<b>🚌 Автобус</b> №30\n<b>⌚️Время отправления</b> - {str(M30[1])[:5]}\n<b>🔜Следующий -</b> {str(M30[2])[:5]}\n\n<b>🚎 Автобус</b> №30A\n<b>⌚️Время отправления</b> - {str(M30a[1])[:5]}\n<b>🔜Следующий -</b> {str(M30a[2])[:5]}\n'
-                                                 f'\n<b>🚎 Автобус</b> №47\n<b>⌚️Время отправления</b> - {str(M47[1])[:5]} \n<b>🔜Следующий -</b> {str(M47[2])[:5]}',
+                await message.answer(f'<b>🏛 С каштановой:</b>\n<b>🚌 Автобус</b> №30 (ЖД)\n<b>⌚️Время отправления</b> - {str(M30[1])[:5]}\n<b>🔜Следующий -</b> {str(M30[2])[:5]}\n\n'
+                                     f'<b>🚎 Автобус</b> №51 (ЖД)\n<b>⌚️Время отправления</b> - {str(M51[1])[:5]}\n<b>🔜Следующий -</b> {str(M51[2])[:5]}\n\n'
+                                     f'<b>🚎 Автобус</b> №52 (ЖД)\n<b>⌚️Время отправления</b> - {str(M52[1])[:5]}\n<b>🔜Следующий -</b> {str(M52[2])[:5]}\n\n'
+                                     f'<b>🚎 Автобус</b> №53 (Аэр)\n<b>⌚️Время отправления</b> - {str(M53[1])[:5]}\n<b>🔜Следующий -</b> {str(M53[2])[:5]}\n\n'
+                                     f'<b>🚎 Автобус</b> №54 (Аэр)\n<b>⌚️Время отправления</b> - {str(M54[1])[:5]}\n<b>🔜Следующий -</b> {str(M54[2])[:5]}\n\n'
+                                                 f'<b>🚎 Автобус</b> №147 (Гора)\n<b>⌚️Время отправления</b> - {str(M47[1])[:5]} \n<b>🔜Следующий -</b> {str(M47[2])[:5]}',
                                                  parse_mode='html')
             await logir('display_schedule_route',start_time, message)
 
