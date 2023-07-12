@@ -1,5 +1,5 @@
 pip>=23.1.2
-python>=3.8
+python==3.9
 https://github.com/aiogram/aiogram/archive/refs/tags/v3.0.0b7.zip
 pyowm
 requests
