@@ -1,4 +1,4 @@
-aiogram==3.0.0b3
+https://github.com/aiogram/aiogram/releases/tag/v3.0.0b7
 pyowm
 requests
 bs4
