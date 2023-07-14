@@ -1,5 +1,3 @@
-pip>=23.1.2
-python==3.9
 https://files.pythonhosted.org/packages/e1/2c/fb4efaf9287e7663e87ee3679fe95b06cfcfa12b7d9f30634401bb3e2e47/aiogram-3.0.0b3.tar.gz
 pyowm
 requests
