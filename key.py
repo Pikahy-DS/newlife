@@ -22,5 +22,5 @@ builder_games = [[KeyboardButton(text = 'Новая игра')],[KeyboardButton(
 markup_games = ReplyKeyboardMarkup(resize_keyboard = True, keyboard = builder_games)
 
 
-builder_102m = [[KeyboardButton(text='🏠 Домой (102м)'), KeyboardButton(text='🏫 В город (102м)')]]
+builder_102m = [[KeyboardButton(text='🏠 Домой (102м)'), KeyboardButton(text='🏫 В город (102м)')]] #f
 markup_102m = ReplyKeyboardMarkup(resize_keyboard=True, keyboard=builder_102m)

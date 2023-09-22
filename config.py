@@ -1,6 +1,6 @@
 
 TOKEN = '2136253632:AAFyQuW5APF5Q3b5uuqyBtqp2AZaCgerETI'
-#TOKEN = '6483116123:AAHXsXKkC13nt0o4jYFcRymFC25wP3r7j3Y' Тестовый токен
+#TOKEN = '6483116123:AAHXsXKkC13nt0o4jYFcRymFC25wP3r7j3Y' Тестовый токен f
 TOKEN_OWM = 'cf1824962192434945dc02cde55f264f'
 admin = [1005179687]
 path_to_log = 'log.txt'

@@ -229,7 +229,7 @@ while True:
                                                  parse_mode='html')
             await logir('display_schedule_route',start_time, message)
 
-        #Вывод расписание для 102m
+        #Вывод расписание для 102m f
         async def display_schedule_route_102m(route, message: Message):
             start_time = time.time()
             current_datetime = await current_datetime_today(message)
