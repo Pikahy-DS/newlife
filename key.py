@@ -20,3 +20,7 @@ markup_zodiac_en = InlineKeyboardMarkup(inline_keyboard=builder_zodiac_en)
 
 builder_games = [[KeyboardButton(text = 'Новая игра')],[KeyboardButton(text='/cancel')]]
 markup_games = ReplyKeyboardMarkup(resize_keyboard = True, keyboard = builder_games)
+
+
+builder_102m = [[KeyboardButton(text='🏠 Домой (102м)'), KeyboardButton(text='🏫 В город (102м)')]]
+markup_102m = ReplyKeyboardMarkup(resize_keyboard=True, keyboard=builder_102m)

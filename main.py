@@ -23,7 +23,8 @@ import os
 import uuid
 import copy
 from config import TOKEN, TOKEN_OWM, admin, output_day, sunday_day, new_employee,route_54_home_sunday,route_54_city_sunday,route_53_home_sunday,route_53_city_sunday,route_52_home_sunday,route_52_city_sunday,route_51_home_sunday,route_51_city_sunday,route_54_home_saturday,route_54_city_saturday,route_53_home_saturday,route_53_city_saturday,route_52_home_saturday,route_52_city_saturday,route_51_home_saturday,route_51_city_saturday,route_51_city_weekdays,route_52_city_weekdays,route_53_city_weekdays,route_54_city_weekdays,route_51_home_weekdays,route_52_home_weekdays,route_53_home_weekdays,route_54_home_weekdays,route_30_home_weekdays, route_30_city_weekdays, route_30a_home_weekdays, route_30a_city_weekdays,route_47_home_weekdays,route_47_city_weekdays,route_30_home_saturday,route_30_city_saturday,route_30a_home_saturday,route_30a_city_saturday,route_47_home_saturday, route_47_city_saturday, route_30_home_sunday, route_30_city_sunday,route_30a_home_sunday, route_30a_city_sunday, route_47_home_sunday, route_47_city_sunday, path_to_log
-from key import markup_main, markup_admin, markup_zodiac_ru, markup_zodiac_en, markup_games
+from config import route_102m_home_weekdays, route_102m_home_saturday, route_102m_home_sunday, route_102m_city_weekdays, route_102m_city_saturday, route_102m_city_sunday
+from key import markup_main, markup_admin, markup_zodiac_ru, markup_zodiac_en, markup_games, markup_102m
 
 while True:
     try:
@@ -228,6 +229,27 @@ while True:
                                                  parse_mode='html')
             await logir('display_schedule_route',start_time, message)
 
+        #Вывод расписание для 102m
+        async def display_schedule_route_102m(route, message: Message):
+            start_time = time.time()
+            current_datetime = await current_datetime_today(message)
+            if current_datetime[2] != 6 and current_datetime[2] != 7 and current_datetime[0] not in output_day:
+                week = 'weekdays'
+            elif (current_datetime[2] == 6 and current_datetime[0] not in output_day) or (current_datetime[0] in sunday_day):
+                week = 'saturday'
+            else:
+                week = 'sunday'
+            #print(globals().get(f'route_30_{route}_{week}'))
+            M102M = await schedule_route(globals().get(f'route_102m_{route}_{week}'), message)
+
+            if route == 'city':
+                await message.answer(f'<b>🚂 С Энергомаша:</b>\n<b>🚌 Автобус</b> №102м\n<b>🔙Предыдущий - </b>{str(M102M[0])[:5]} \n<b>⌚ Время отправления</b> - {str(M102M[1])[:5]}\n<b>🔜Следующий - </b>{str(M102M[2])[:5]}\n\n',
+                                                 parse_mode='html')
+            else:
+                await message.answer(f'<b>🏛 С пр-т Славы:</b>\n<b>🚌 Автобус</b> №102м \n<b>⌚️Время отправления</b> - {str(M102M[1])[:5]}\n<b>🔜Следующий -</b> {str(M102M[2])[:5]}\n\n',
+                                                 parse_mode='html')
+            await logir('display_schedule_route',start_time, message)
+
         async def delivery_sms(id_recipient,id_sunder,text,message: Message):
             start_time = time.time()
             bot = Bot(TOKEN, parse_mode = "html")
@@ -358,6 +380,13 @@ while True:
             await message.answer('Я починиль',reply_markup = markup_main)
             await logir('key',start_time, message)
 
+        #Клавиатура для майского 102м
+        @form_router.message(commands={"102m"})
+        async def key(message: Message):
+            start_time = time.time()
+            await message.answer('Вы выбрали клавиатуру для направления Майский',reply_markup = markup_102m)
+            await logir('key',start_time, message)
+
         #Действие при запуске бота
         @form_router.message(commands={"start"})
         async def start(message: Message):
@@ -415,6 +444,14 @@ while True:
                     'Я придумал! Введи 4-х значное число с неповторяющимися цифрами.\nБыки - угадал цифру и ее расположение. Корова - угадал только цифру.\nЕсли надоест играть, нажми на клавиатуре кнопку "/cancel".',
                     reply_markup=markup_games)
                 await logir('Игра', start_time, message)
+            elif message.text == '🏠 Домой (102м)':
+                start_time = time.time()
+                await display_schedule_route_102m('city', message)
+                await logir('Домой', start_time, message)
+            elif message.text == '🏫 В город (102м)':
+                start_time = time.time()
+                await display_schedule_route_102m('home', message)
+                await logir('В городе', start_time, message)
             elif message.text == '?':
                 yes_no = 'да' if random.randint(1, 2) == 1 else 'не'
                 await message.answer(f"Я тебе говорю {yes_no} делай это!")
