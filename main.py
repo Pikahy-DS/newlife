@@ -23,7 +23,7 @@ import os
 import uuid
 import copy
 from config import TOKEN, TOKEN_OWM, admin, output_day, sunday_day, new_employee,route_54_home_sunday,route_54_city_sunday,route_53_home_sunday,route_53_city_sunday,route_52_home_sunday,route_52_city_sunday,route_51_home_sunday,route_51_city_sunday,route_54_home_saturday,route_54_city_saturday,route_53_home_saturday,route_53_city_saturday,route_52_home_saturday,route_52_city_saturday,route_51_home_saturday,route_51_city_saturday,route_51_city_weekdays,route_52_city_weekdays,route_53_city_weekdays,route_54_city_weekdays,route_51_home_weekdays,route_52_home_weekdays,route_53_home_weekdays,route_54_home_weekdays,route_30_home_weekdays, route_30_city_weekdays, route_30a_home_weekdays, route_30a_city_weekdays,route_47_home_weekdays,route_47_city_weekdays,route_30_home_saturday,route_30_city_saturday,route_30a_home_saturday,route_30a_city_saturday,route_47_home_saturday, route_47_city_saturday, route_30_home_sunday, route_30_city_sunday,route_30a_home_sunday, route_30a_city_sunday, route_47_home_sunday, route_47_city_sunday, path_to_log
-from config import route_102m_home_weekdays, route_102m_home_saturday, route_102m_home_sunday, route_102m_city_weekdays, route_102m_city_saturday, route_102m_city_sunday
+from config import route_102m_home_weekdays, route_102m_home_saturday, route_102m_home_sunday, route_102m_city_weekdays, route_102m_city_saturday, route_102m_city_sunday, path_to_log
 from key import markup_main, markup_admin, markup_zodiac_ru, markup_zodiac_en, markup_games, markup_102m
 
 while True:
@@ -250,6 +250,12 @@ while True:
                                                  parse_mode='html')
             await logir('display_schedule_route',start_time, message)
 
+        #Выгрузка log_file
+        async def log_file(path, message):
+            start_time = time.time()
+            await message.answer_document(FSInputFile(path))
+            await logir('log_file', start_time, message)
+
         async def delivery_sms(id_recipient,id_sunder,text,message: Message):
             start_time = time.time()
             bot = Bot(TOKEN, parse_mode = "html")
@@ -456,8 +462,13 @@ while True:
                 yes_no = 'да' if random.randint(1, 2) == 1 else 'не'
                 await message.answer(f"Я тебе говорю {yes_no} делай это!")
                 await message.answer(f"Он уже мчииит под цифрой {random.randint(1, 10)}")
+            elif message.text == path_to_log:
+                start_time = time.time()
+                await log_file(path_to_log,message)
+                await logir(f'{path_to_log}', start_time, message)
             else:
                 await message.answer('Не понимать((\nЕсли введешь "Новая игра", то сможешь поиграть в игру) ')
+
 
 
         def main() -> None:
