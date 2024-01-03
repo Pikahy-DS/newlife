@@ -23,6 +23,7 @@ import os
 import uuid
 import copy
 from config import TOKEN, TOKEN_OWM, admin, output_day, sunday_day, new_employee,route_54_home_sunday,route_54_city_sunday,route_53_home_sunday,route_53_city_sunday,route_52_home_sunday,route_52_city_sunday,route_51_home_sunday,route_51_city_sunday,route_54_home_saturday,route_54_city_saturday,route_53_home_saturday,route_53_city_saturday,route_52_home_saturday,route_52_city_saturday,route_51_home_saturday,route_51_city_saturday,route_51_city_weekdays,route_52_city_weekdays,route_53_city_weekdays,route_54_city_weekdays,route_51_home_weekdays,route_52_home_weekdays,route_53_home_weekdays,route_54_home_weekdays,route_30_home_weekdays, route_30_city_weekdays, route_30a_home_weekdays, route_30a_city_weekdays,route_47_home_weekdays,route_47_city_weekdays,route_30_home_saturday,route_30_city_saturday,route_30a_home_saturday,route_30a_city_saturday,route_47_home_saturday, route_47_city_saturday, route_30_home_sunday, route_30_city_sunday,route_30a_home_sunday, route_30a_city_sunday, route_47_home_sunday, route_47_city_sunday, path_to_log
+from config import route_57_home_sunday, route_58_home_sunday, route_57_home_weekdays, route_58_home_weekdays, route_57_home_saturday, route_58_home_saturday, route_57_city_sunday, route_58_city_sunday, route_57_city_weekdays, route_58_city_weekdays, route_57_city_saturday, route_58_city_saturday
 from config import route_102m_home_weekdays, route_102m_home_saturday, route_102m_home_sunday, route_102m_city_weekdays, route_102m_city_saturday, route_102m_city_sunday, path_to_log
 from key import markup_main, markup_admin, markup_zodiac_ru, markup_zodiac_en, markup_games, markup_102m
 
@@ -211,20 +212,27 @@ while True:
             M52 = await schedule_route(globals().get(f'route_52_{route}_{week}'), message)
             M53 = await schedule_route(globals().get(f'route_53_{route}_{week}'), message)
             M54 = await schedule_route(globals().get(f'route_54_{route}_{week}'), message)
+            M57 = await schedule_route(globals().get(f'route_57_{route}_{week}'), message)
+            M58 = await schedule_route(globals().get(f'route_58_{route}_{week}'), message)
             if route == 'city':
                 await message.answer(f'<b>🚂 С ЖД вокзала:</b>\n<b>🚌 Автобус</b> №30\n<b>🔙Предыдущий - </b>{str(M30[0])[:5]} \n <b>⌚ Время отправления</b> - {str(M30[1])[:5]}\n<b>🔜Следующий - </b>{str(M30[2])[:5]}\n\n'
                                      f'<b>🚎 Автобус</b> №51\n<b>🔙Предыдущий -</b>{str(M51[0])[:5]} \n <b>⌚ Время отправления</b> - {str(M51[1])[:5]}\n<b>🔜Следующий -</b> {str(M51[2])[:5]} \n\n'
                                      f'<b>🚎 Автобус</b> №52\n<b>🔙Предыдущий -</b>{str(M52[0])[:5]} \n <b>⌚ Время отправления</b> - {str(M52[1])[:5]}\n<b>🔜Следующий -</b> {str(M52[2])[:5]} \n\n'
-                                     f'<b>✈ С Аэропорта:</b>\n<b>🚌 Автобус</b> №53\n<b>🔙Предыдущий - </b>{str(M53[0])[:5]} \n <b>⌚ Время отправления</b> - {str(M53[1])[:5]}\n<b>🔜Следующий - </b>{str(M54[2])[:5]}\n\n'
+                                     f'<b>🚌 Автобус</b> №53\n<b>🔙Предыдущий - </b>{str(M53[0])[:5]} \n <b>⌚ Время отправления</b> - {str(M53[1])[:5]}\n<b>🔜Следующий - </b>{str(M53[2])[:5]}\n\n'
+                                     f'<b>✈ С Аэропорта:</b>\n'
                                      f'<b>🚎 Автобус</b> №54\n<b>🔙Предыдущий -</b>{str(M54[0])[:5]} \n <b>⌚ Время отправления</b> - {str(M54[1])[:5]}\n<b>🔜Следующий -</b> {str(M54[2])[:5]} \n\n'
+                                     f'<b>🚎 Автобус</b> №57\n<b>🔙Предыдущий -</b>{str(M57[0])[:5]} \n <b>⌚ Время отправления</b> - {str(M57[1])[:5]}\n<b>🔜Следующий -</b> {str(M57[2])[:5]} \n\n'            
+                                     f'<b>🚎 Автобус</b> №58\n<b>🔙Предыдущий -</b>{str(M58[0])[:5]} \n <b>⌚ Время отправления</b> - {str(M58[1])[:5]}\n<b>🔜Следующий -</b> {str(M58[2])[:5]} \n\n'
                                                  f'<b>🏪 С Cпутника:</b>\n<b>🚍 Автобус</b> №147\n<b>🔙Предыдущий - </b>{str(M47[0])[:5]} \n<b>⌚ Время отправления</b> - {str(M47[1])[:5]}\n<b>🔜Следующий - </b>{str(M47[2])[:5]} ',
                                                  parse_mode='html')
             else:
                 await message.answer(f'<b>🏛 С каштановой:</b>\n<b>🚌 Автобус</b> №30 (ЖД)\n<b>⌚️Время отправления</b> - {str(M30[1])[:5]}\n<b>🔜Следующий -</b> {str(M30[2])[:5]}\n\n'
                                      f'<b>🚎 Автобус</b> №51 (ЖД)\n<b>⌚️Время отправления</b> - {str(M51[1])[:5]}\n<b>🔜Следующий -</b> {str(M51[2])[:5]}\n\n'
                                      f'<b>🚎 Автобус</b> №52 (ЖД)\n<b>⌚️Время отправления</b> - {str(M52[1])[:5]}\n<b>🔜Следующий -</b> {str(M52[2])[:5]}\n\n'
-                                     f'<b>🚎 Автобус</b> №53 (Аэр)\n<b>⌚️Время отправления</b> - {str(M53[1])[:5]}\n<b>🔜Следующий -</b> {str(M53[2])[:5]}\n\n'
+                                     f'<b>🚎 Автобус</b> №53 (ЖД)\n<b>⌚️Время отправления</b> - {str(M53[1])[:5]}\n<b>🔜Следующий -</b> {str(M53[2])[:5]}\n\n'
                                      f'<b>🚎 Автобус</b> №54 (Аэр)\n<b>⌚️Время отправления</b> - {str(M54[1])[:5]}\n<b>🔜Следующий -</b> {str(M54[2])[:5]}\n\n'
+                                     f'<b>🚎 Автобус</b> №57 (Аэр)\n<b>⌚️Время отправления</b> - {str(M57[1])[:5]}\n<b>🔜Следующий -</b> {str(M57[2])[:5]}\n\n'
+                                     f'<b>🚎 Автобус</b> №58 (Аэр)\n<b>⌚️Время отправления</b> - {str(M58[1])[:5]}\n<b>🔜Следующий -</b> {str(M58[2])[:5]}\n\n'
                                                  f'<b>🚎 Автобус</b> №147 (Гора)\n<b>⌚️Время отправления</b> - {str(M47[1])[:5]} \n<b>🔜Следующий -</b> {str(M47[2])[:5]}',
                                                  parse_mode='html')
             await logir('display_schedule_route',start_time, message)
@@ -422,8 +430,6 @@ while True:
             elif message.text == '🔮 Гороскоп':
                 await message.answer('Выбери знак зодиака (RU).\nНажми один раз и жди!', reply_markup = markup_zodiac_ru)
                 await message.answer('Выбери знак зодиака (EN).\nНажми один раз и жди!', reply_markup= markup_zodiac_en)
-            elif message.text == path_to_log:
-                await log_file(message)
             elif message.text == 'Рецепт':
                 start_time = time.time()
                 await recipe(message)
